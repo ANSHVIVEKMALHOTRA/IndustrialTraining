@@ -32,9 +32,9 @@ Ek_tx = pk_tx * Tkl_tx
 print("Energy Consumption for Transmission of task Tk:", Ek_tx)
 
 # Decision variable calculation (Corrected logic)
-if Tk_loc <= Tk_d and Ek_loc <= Ek_tx:  # Prioritize local processing if feasible
+if Tk_loc <= Tkl_tx and Ek_loc <= Ek_tx:  # Prioritize local processing if feasible
     xk = 0
-elif Tkl_tx <= Tk_d and Ek_tx <= Ek_loc:  # Offload if transmission is more efficient
+elif Tkl_tx <= Tk_loc and Ek_tx <= Ek_loc:  # Offload if transmission is more efficient
     xk = 1
 elif Tk_loc < Tkl_tx and Ek_loc < Ek_tx:  # Compare both, prioritize feasibility within the deadline
     if Tkl_tx <= Tk_d:
@@ -49,6 +49,10 @@ else:  # Otherwise, fallback to local processing
 
 print("")
 print("The decision variable xk is:", xk)
+
+
+
+
 
 # Constants and Parameters
 num_fog_nodes = 5  # Number of ECSs
