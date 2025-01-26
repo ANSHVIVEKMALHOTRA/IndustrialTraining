@@ -3,8 +3,8 @@ import math
 
 # Input parameters
 Dk_f = 16 * 1e6  # CPU frequency in Hz
-Tk_c = 210       # Computation workload in cycles
-Bl = 10 * 1e6    # Bandwidth in Hz
+Tk_c = 210      # Computation workload in cycles
+Bl = 10 * 1e6  # Bandwidth in Hz
 Bw = 10 * 1e6    # Bandwidth in Hz
 Tk_in = 300 * 1e3 # Input data size in bits
 alpha = 1        # Energy consumption factor
@@ -54,11 +54,15 @@ print("The decision variable xk is:", xk)
 
 
 
+
+
+import random
+
 # Constants and Parameters
 num_fog_nodes = 5  # Number of ECSs
 bandwidth = 16 * 1e6  # Bandwidth in bits per second (B_l)
 noise_power = 1e-10  # Noise power in Watts
-num_iot_devices = 250  # Reduced for the example
+num_iot_devices = 1000  # Reduced for the example
 input_size = 450 * 1e3  # Static input size in bits
 output_size = 15 * 1e3  # Static output size in bits
 computational_demand = 210 * 1e6  # Computational demand in cycles
@@ -94,16 +98,18 @@ def create_ecs(num_ecs):
     return ecs_list
 
 
-# Placeholder: Perform DECO scheduling
+# Perform DECO scheduling with randomized completion times
 def deco_scheduling(tasks, ecs_list, graph, bandwidth):
-    # Example: Assign tasks sequentially to ECSs
     assignments = []
     for i, task in enumerate(tasks):
         ecs_id = i % len(ecs_list)  # Round-robin assignment
+        start_time = i * 5.0  # Example start time
+        # Randomize the completion time between 5 and 50 seconds
+        completion_time = start_time + random.uniform(5, 50)
         assignments.append({
             "ecs_id": ecs_id,
-            "start_time": i * 5.0,  # Example start time
-            "completion_time": i * 5.0 + 10.0  # Example completion time
+            "start_time": start_time,
+            "completion_time": completion_time
         })
     return assignments
 
@@ -119,12 +125,27 @@ def main():
     assignments = deco_scheduling(tasks, ecs_list, graph, bandwidth)
 
     # Output results
+    total_completion_time = 0
+    outaged_tasks = 0
+
     if assignments:
         print("\nTask Assignments:")
         for idx, assignment in enumerate(assignments):
+            task_duration = assignment['completion_time'] - assignment['start_time']
+            total_completion_time += task_duration
             print(f"Task {idx + 1} → ECS {assignment['ecs_id']}")
-            print(f"  Start Time: {assignment['start_time']:.6f} seconds")
-            print(f"  Completion Time: {assignment['completion_time']:.6f} seconds")
+            if task_duration > 30:
+                outaged_tasks += 1
+                print(f"  Outaged Task: Task {idx + 1} exceeded 30 seconds (Duration: {task_duration:.6f} seconds)")
+            else:
+                print(f"  Start Time: {assignment['start_time']:.6f} seconds")
+                print(f"  Completion Time: {assignment['completion_time']:.6f} seconds")
+
+        average_completion_time = total_completion_time / len(assignments)
+        print(f"\nSummary:")
+        print(f"  Total Completion Time: {total_completion_time:.6f} seconds")
+        print(f"  Average Completion Time: {average_completion_time:.6f} seconds")
+        print(f"  Number of Outaged Tasks: {outaged_tasks}")
     else:
         print("No tasks were assigned.")
 
