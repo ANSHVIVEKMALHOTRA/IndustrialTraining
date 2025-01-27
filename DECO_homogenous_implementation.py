@@ -7,7 +7,7 @@ Tk_c = 210      # Computation workload in cycles
 Bl = 10 * 1e6  # Bandwidth in Hz
 Bw = 10 * 1e6    # Bandwidth in Hz
 Tk_in = 300 * 1e3 # Input data size in bits
-alpha = 1        # Energy consumption factor
+alpha = 1e-13        # Energy consumption factor
 pk_tx = 0.5      # Transmission power in Watts
 Tk_d = 30        # Deadline in seconds
 
@@ -24,12 +24,13 @@ Tkl_tx = Tk_in / rkl
 print("Transmission delay for sending data to nearest server:", Tkl_tx)
 
 # Local energy consumption (Equation 9)
-Ek_loc = alpha * (Dk_f**2) * Tk_c
+Ek_loc = alpha * (Dk_f**2) * Tk_c                                                                   # energy 1
 print("Local Energy Consumption of task Tk:", Ek_loc)
 
 # Transmission energy consumption (Equation 10)
-Ek_tx = pk_tx * Tkl_tx
+Ek_tx = pk_tx * Tkl_tx                                                                              #energy 2
 print("Energy Consumption for Transmission of task Tk:", Ek_tx)
+
 
 # Decision variable calculation (Corrected logic)
 if Tk_loc <= Tkl_tx and Ek_loc <= Ek_tx:  # Prioritize local processing if feasible
@@ -51,6 +52,11 @@ print("")
 print("The decision variable xk is:", xk)
 
 
+#
+Ek= Ek_loc * (1 - xk)  + Ek_tx * xk
+print("energy consumption at fog ", Ek)
+
+
 
 
 
@@ -62,7 +68,7 @@ import random
 num_fog_nodes = 5  # Number of ECSs
 bandwidth = 16 * 1e6  # Bandwidth in bits per second (B_l)
 noise_power = 1e-10  # Noise power in Watts
-num_iot_devices = 1000  # Reduced for the example
+num_iot_devices = 250  # Reduced for the example
 input_size = 450 * 1e3  # Static input size in bits
 output_size = 15 * 1e3  # Static output size in bits
 computational_demand = 210 * 1e6  # Computational demand in cycles
