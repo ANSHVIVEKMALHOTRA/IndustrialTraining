@@ -130,7 +130,7 @@ import random
 num_fog_nodes = 5  # Number of ECSs
 bandwidth = 16 * 1e6  # Bandwidth in bits per second (B_l)
 noise_power = 1e-10  # Noise power in Watts
-num_iot_devices = 250  # Reduced for the example
+num_iot_devices = 1000  # Reduced for the example
 input_size = 450 * 1e3  # Static input size in bits
 output_size = 15 * 1e3  # Static output size in bits
 computational_demand = 210 * 1e6  # Computational demand in cycles
